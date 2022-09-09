@@ -1,4 +1,6 @@
 # Clash
-Pisah Trafik 2 ISP
+
 # Fitur
+- PISAH TRAFICK 
+- GAME
 # How To Use
