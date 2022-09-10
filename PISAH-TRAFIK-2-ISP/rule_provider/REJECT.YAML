@@ -1,9 +1,9 @@
+### MUFID-ABDULOH
+### https://github.com/MUFID-ABDULOH
 payload:
   # Reject
   - DOMAIN-KEYWORD,.bug.
-#MUFID.NET
-  - DOMAIN-SUFFIX,MUFID.NET
-  
+
   # > Situs Porn
   - DOMAIN-SUFFIX,0plkijj.vip
   - DOMAIN-SUFFIX,114av.xyz

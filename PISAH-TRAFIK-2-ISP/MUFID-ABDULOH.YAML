@@ -1,0 +1,300 @@
+### MUFID-ABDULOH
+### https://github.com/MUFID-ABDULOH
+tproxy-port: 7895
+redir-port: 7892
+port: 7890
+socks-port: 7891
+mixed-port: 7893
+bind-address: "*"
+mode: rule
+allow-lan: true
+unified-delay: true
+log-level: silent
+external-controller: 0.0.0.0:9090
+external-ui: "/usr/share/openclash/ui"
+ipv6: false
+secret: MUFID-ABDULOH
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: redir-host
+  listen: 0.0.0.0:7874
+  nameserver:
+  - https://doh.pub/dns-query
+  - https://dns.alidns.com/dns-query
+  - dhcp://"eth1"
+  - dhcp://"wwan0"
+  - 192.168.8.1
+  - 8.8.8.8
+  - 8.8.4.4
+  fallback:
+  - https://dns.google/dns-query
+  - https://cloudflare-dns.com/dns-query
+  - tls://1.1.1.1:853
+  - tls://8.8.8.8:853
+  fallback-filter:
+    geoip: false
+    ipcidr:
+    - 0.0.0.0/8
+    - 10.0.0.0/8
+    - 100.64.0.0/10
+    - 127.0.0.0/8
+    - 169.254.0.0/16
+    - 172.16.0.0/12
+    - 192.0.0.0/24
+    - 192.0.2.0/24
+    - 192.88.99.0/24
+    - 192.168.0.0/16
+    - 198.18.0.0/15
+    - 198.51.100.0/24
+    - 203.0.113.0/24
+    - 224.0.0.0/4
+    - 240.0.0.0/4
+    - 255.255.255.255/32
+    domain:
+    - "+.google.com"
+    - "+.facebook.com"
+    - "+.youtube.com"
+    - "+.githubusercontent.com"
+  default-nameserver:
+  - 192.168.8.1
+  - 8.8.8.8
+  - 8.8.4.4
+  - tls://1.1.1.1:853
+  - tls://8.8.8.8:853
+rules:
+- DST-PORT,7895,REJECT
+- DST-PORT,7892,REJECT
+- DST-PORT,7895,REJECT
+- DST-PORT,7892,REJECT
+- DST-PORT,7895,REJECT
+- DST-PORT,7892,REJECT
+- DST-PORT,7895,REJECT
+- DST-PORT,7892,REJECT
+- RULE-SET,GAME,GAME
+- RULE-SET,SOSMED,BESTPING
+- RULE-SET,INDONESIA,INDONESIA
+- RULE-SET, STREAMING, LOADBALANCE
+- RULE-SET, ADBLOCK, ADBLOCK
+- RULE-SET,DIRECT,DIRECT
+- IP-CIDR,198.18.0.1/16,REJECT,no-resolve
+- RULE-SET,REJECT,REJECT
+- MATCH,GLOBAL
+proxy-groups:
+- name: GLOBAL
+  type: select
+  disable-udp: false
+  proxies:
+  - DIRECT
+  - BESTPING
+  - LOADBALANCE
+- name: ETH 1
+  type: select
+  disable-udp: false
+  use:
+  - ETH-1
+  - AKUN-INDONESIA
+  proxies:
+  - DIRECT
+  - REJECT
+  - BESTPING - ETH 1
+  - LOADBALANCE - ETH 1
+  url: http://www.gstatic.com/generate_204
+  interval: '90'
+  interface-name: eth1
+- name: ETH 2
+  type: select
+  disable-udp: false
+  use:
+  - ETH-2
+  - AKUN-INDONESIA
+  proxies:
+  - DIRECT
+  - BESTPING - ETH 2
+  - LOADBALANCE - ETH 2
+  url: http://www.gstatic.com/generate_204
+  interval: '90'
+  interface-name: wwan0
+- name: ETH 1 X ETH 2
+  type: load-balance
+  strategy: consistent-hashing
+  disable-udp: false
+  proxies:
+  - ETH 1
+  - ETH 2
+  url: http://www.gstatic.com/generate_204
+  interval: '90'
+- name: GAME
+  type: select
+  disable-udp: false
+  use:
+  - ETH-1
+  - ETH-2
+  - AKUN-INDONESIA
+  proxies:
+  - DIRECT
+  - GLOBAL
+  - ETH 1
+  - ETH 2
+  - BESTPING
+  - BESTPING - ETH 1
+  - BESTPING - ETH 2
+  - LOADBALANCE
+- name: ADBLOCK
+  type: select
+  disable-udp: false
+  proxies:
+  - DIRECT
+  - REJECT
+  - GLOBAL
+- name: BESTPING
+  type: url-test
+  tolerance: '150'
+  proxies:
+  - BESTPING - ETH 1
+  - BESTPING - ETH 2
+  url: http://www.gstatic.com/generate_204
+  interval: '90'
+- name: LOADBALANCE
+  type: load-balance
+  strategy: consistent-hashing
+  disable-udp: false
+  proxies:
+  - LOADBALANCE - ETH 1
+  - LOADBALANCE - ETH 2
+  url: http://www.gstatic.com/generate_204
+  interval: '90'
+- name: BESTPING - ETH 1
+  type: url-test
+  tolerance: '150'
+  use:
+  - ETH-1
+  - AKUN-INDONESIA
+  url: http://www.gstatic.com/generate_204
+  interval: '90'
+  interface-name: eth1
+- name: LOADBALANCE - ETH 1
+  type: load-balance
+  strategy: consistent-hashing
+  disable-udp: false
+  use:
+  - ETH-1
+  - AKUN-INDONESIA
+  url: http://www.gstatic.com/generate_204
+  interval: '90'
+  interface-name: eth1
+- name: BESTPING - ETH 2
+  type: url-test
+  tolerance: '150'
+  use:
+  - ETH-2
+  - AKUN-INDONESIA
+  url: http://www.gstatic.com/generate_204
+  interval: '90'
+  interface-name: wwan0
+- name: LOADBALANCE - ETH 2
+  type: load-balance
+  strategy: consistent-hashing
+  disable-udp: false
+  use:
+  - ETH-2
+  - AKUN-INDONESIA
+  url: http://www.gstatic.com/generate_204
+  interval: '90'
+  interface-name: wwan0
+- name: INDONESIA
+  type: load-balance
+  strategy: consistent-hashing
+  disable-udp: false
+  use:
+  - AKUN-INDONESIA
+  url: http://www.gstatic.com/generate_204
+  interval: '90'
+proxy-providers:
+  ETH-1:
+    type: file
+    path: "./proxy_provider/ETH-1.YAML"
+    url: https://raw.githubusercontent.com/MUFID-ABDULOH/Clash/master/PISAH-TRAFIK-2-ISP/proxy_provider/ETH-1.YAML
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 90
+  ETH-2:
+    type: file
+    path: "./proxy_provider/ETH-2.YAML"
+    url: https://raw.githubusercontent.com/MUFID-ABDULOH/Clash/master/PISAH-TRAFIK-2-ISP/proxy_provider/ETH-2.YAML
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 90
+  AKUN-INDONESIA:
+    type: file
+    path: "./proxy_provider/AKUN-INDONESIA.YAML"
+    health-check:
+      enable: true
+      url: http://www.gstatic.com/generate_204
+      interval: 90
+rule-providers:
+  DIRECT:
+    type: http
+    behavior: classical
+    path: "./rule_provider/DIRECT.YAML"
+    url: https://raw.githubusercontent.com/MUFID-ABDULOH/Clash/master/PISAH-TRAFIK-2-ISP/rule_provider/DIRECT.YAML
+    interval: 86400
+  GAME:
+    type: http
+    behavior: classical
+    path: "./rule_provider/GAME.YAML"
+    url: https://raw.githubusercontent.com/MUFID-ABDULOH/Clash/master/PISAH-TRAFIK-2-ISP/rule_provider/GAME.YAML
+    interval: 86400
+  INDONESIA:
+    type: http
+    behavior: classical
+    path: "./rule_provider/INDONESIA.YAML"
+    url: https://raw.githubusercontent.com/MUFID-ABDULOH/Clash/master/PISAH-TRAFIK-2-ISP/rule_provider/INDONESIA.YAML
+    interval: 86400
+  SOSMED:
+    type: http
+    behavior: classical
+    path: "./rule_provider/SOSMED.YAML"
+    url: https://raw.githubusercontent.com/MUFID-ABDULOH/Clash/master/PISAH-TRAFIK-2-ISP/rule_provider/SOSMED.YAML
+    interval: 86400
+  STREAMING:
+    type: http
+    behavior: classical
+    path: "./rule_provider/STREAMING.YAML"
+    url: https://raw.githubusercontent.com/MUFID-ABDULOH/Clash/master/PISAH-TRAFIK-2-ISP/rule_provider/STREAMING.YAML
+    interval: 86400
+  REJECT:
+    type: http
+    behavior: classical
+    path: "./rule_provider/REJECT.YAML"
+    url: https://raw.githubusercontent.com/MUFID-ABDULOH/Clash/master/PISAH-TRAFIK-2-ISP/rule_provider/REJECT.YAML
+    interval: 86400
+  ADBLOCK:
+    type: http
+    behavior: classical
+    path: "./rule_provider/ADBLOCK.YAML"
+    url: https://raw.githubusercontent.com/MUFID-ABDULOH/Clash/master/PISAH-TRAFIK-2-ISP/rule_provider/ADBLOCK.YAML
+    interval: 86400
+tun:
+  enable: true
+  stack: gvisor
+  device: utun
+  auto-route: false
+  auto-detect-interface: false
+  dns-hijack:
+  - tcp://any:53
+geodata-mode: false
+geodata-loader: memconservative
+tcp-concurrent: true
+authentication:
+- Clash:oHeRh67o
+sniffer:
+  enable: true
+  sniffing:
+  - tls
+  - http
+profile:
+  store-selected: true
+  store-fake-ip: true
