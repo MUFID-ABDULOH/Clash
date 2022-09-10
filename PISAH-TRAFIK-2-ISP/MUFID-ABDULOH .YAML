@@ -10,23 +10,20 @@ allow-lan: true
 unified-delay: true
 log-level: silent
 external-controller: 0.0.0.0:9090
-external-ui: "/usr/share/openclash/ui"
+external-ui: yacd-gh-pages
 ipv6: false
-secret: reyre
+secret: 'MUFID-ABDULOH'
 dns:
   enable: true
   ipv6: false
-  enhanced-mode: redir-host
-  listen: 0.0.0.0:7874
+  enhanced-mode: fake-ip
+  fake-ip-range: 28.0.0.0/8
+  listen: 0.0.0.0:1053
   nameserver:
   - rekeningku.com
   - "*.rekeningku.com"
   - https://doh.pub/dns-query
   - https://dns.alidns.com/dns-query
-  - dhcp://"eth1"
-  - 192.168.8.1
-  - 8.8.8.8
-  - 8.8.4.4
   fallback:
   - https://dns.google/dns-query
   - https://cloudflare-dns.com/dns-query
@@ -56,15 +53,7 @@ dns:
     - "+.facebook.com"
     - "+.youtube.com"
     - "+.githubusercontent.com"
-  default-nameserver:
-  - 192.168.8.1
-  - 8.8.8.8
-  - 8.8.4.4
-  - tls://1.1.1.1:853
-  - tls://8.8.8.8:853
 rules:
-- DST-PORT,7895,REJECT
-- DST-PORT,7892,REJECT
 - DST-PORT,7895,REJECT
 - DST-PORT,7892,REJECT
 - DST-PORT,7895,REJECT
@@ -213,57 +202,57 @@ proxy-groups:
 proxy-providers:
   ETH-1:
     type: file
-    path: "./proxy_provider/ETH-1.YAML"
+    path: "./ETH-1.YAML"
     health-check:
       enable: true
       url: http://www.gstatic.com/generate_204
       interval: 90
   ETH-2:
     type: file
-    path: "./proxy_provider/ETH-2.YAML"
+    path: "./ETH-2.YAML"
     health-check:
       enable: true
       url: http://www.gstatic.com/generate_204
       interval: 90
   AKUN-INDONESIA:
     type: file
-    path: "./proxy_provider/AKUN-INDONESIA.YAML"
+    path: "./AKUN-INDONESIA.YAML"
     health-check:
       enable: true
       url: http://www.gstatic.com/generate_204
       interval: 90
 rule-providers:
   DIRECT:
-    type: file
+    type: http
     behavior: classical
-    path: "./rule_provider/DIRECT.YAML"
+    path: "https://github.com/MUFID-ABDULOH/Clash/blob/master/PISAH-TRAFIK-2-ISP/rule_provider/DIRECT.YAML"
   GAME:
-    type: file
+    type: http
     behavior: classical
-    path: "./rule_provider/GAME.YAML"
+    path: "https://github.com/MUFID-ABDULOH/Clash/blob/master/PISAH-TRAFIK-2-ISP/rule_provider/GAME.YAML"
   INDONESIA:
-    type: file
+    type: http
     behavior: classical
-    path: "./rule_provider/INDONESIA.YAML"
+    path: "https://github.com/MUFID-ABDULOH/Clash/blob/master/PISAH-TRAFIK-2-ISP/rule_provider/INDONESIA.YAML"
   SOSMED:
-    type: file
+    type: http
     behavior: classical
-    path: "./rule_provider/SOSMED.YAML"
+    path: "https://github.com/MUFID-ABDULOH/Clash/blob/master/PISAH-TRAFIK-2-ISP/rule_provider/SOSMED.YAML"
   STREAMING:
-    type: file
+    type: http
     behavior: classical
-    path: "./rule_provider/STREAMING.YAML"
+    path: "https://github.com/MUFID-ABDULOH/Clash/blob/master/PISAH-TRAFIK-2-ISP/rule_provider/STREAMING.YAML"
   REJECT:
-    type: file
+    type: http
     behavior: classical
-    path: "./rule_provider/REJECT.YAML"
+    path: "https://github.com/MUFID-ABDULOH/Clash/blob/master/PISAH-TRAFIK-2-ISP/rule_provider/REJECT.YAML"
   ADBLOCK:
-    type: file
+    type: http
     behavior: classical
-    path: "./rule_provider/ADBLOCK.YAML"
+    path: "https://github.com/MUFID-ABDULOH/Clash/blob/master/PISAH-TRAFIK-2-ISP/rule_provider/ADBLOCK.YAML"
 tun:
   enable: true
-  stack: gvisor
+  stack: system
   device: utun
   auto-route: false
   auto-detect-interface: false
@@ -271,14 +260,6 @@ tun:
   - tcp://any:53
 geodata-mode: false
 geodata-loader: memconservative
-tcp-concurrent: true
+tcp-concurrent: false
 authentication:
 - Clash:oHeRh67o
-sniffer:
-  enable: true
-  sniffing:
-  - tls
-  - http
-profile:
-  store-selected: true
-  store-fake-ip: true
